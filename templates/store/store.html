@@ -127,39 +127,73 @@
 
         <div class="row">
 
-          {% for prod in products %}
-          <div class="col-md-4">
-            <figure class="card card-product-grid">
-              <div class="img-wrap">
+          <!-- Logica paara ver si hay productos -->
+          {% if products %}
 
-                <a href="{{prod.get_url}}"><img src="{{prod.images.url}}"></a>
+            {% for prod in products %}
+            <div class="col-md-4">
+              <figure class="card card-product-grid">
+                <div class="img-wrap">
 
-              </div> <!-- img-wrap.// -->
-              <figcaption class="info-wrap">
-                <div class="fix-height">
-                  <a href="{{prod.get_url}}" class="title">{{prod.product_name}}</a>
-                  <div class="price-wrap mt-2">
-                    <span class="price">${{prod.price}}</span>
-                  </div> <!-- price-wrap.// -->
-                </div>
-                <a href="{% url 'add_cart' prod.id %}" class="btn btn-block btn-success">Agregar al Carrito </a>
-              </figcaption>
-            </figure>
-          </div> <!-- col.// -->
-          {% endfor %}
+                  <a href="{{prod.get_url}}"><img src="{{prod.images.url}}"></a>
+
+                </div> <!-- img-wrap.// -->
+                <figcaption class="info-wrap">
+                  <div class="fix-height">
+                    <a href="{{prod.get_url}}" class="title">{{prod.product_name}}</a>
+                    <div class="price-wrap mt-2">
+                      <span class="price">${{prod.price}}</span>
+                    </div> <!-- price-wrap.// -->
+                  </div>
+                  <a href="{% url 'add_cart' prod.id %}" class="btn btn-block btn-success">Agregar al Carrito </a>
+                </figcaption>
+              </figure>
+            </div> <!-- col.// -->
+            {% endfor %}
+
+          {% else %}
+           <div class="">
+             <h2>No se encontraron resultados</h2>
+           </div>
+          {% endif %}
 
         </div> <!-- row end.// -->
 
 
         <nav class="mt-4" aria-label="Page navigation sample">
+
+          {% if products.has_other_pages %}
           <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+
+            <!--Aplicamos la logica del boton anterior que solo se habilitara cuando haya paginas anteriores -->
+            {% if products.has_previous %}
+              <li class="page-item"><a class="page-link" href="?page={{products.previous_page_number}}">Anterior</a></li>
+            {% else %}
+              <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+            {% endif %}
+
+            <!--Aplicamos la logica para las distintas paginas de acuerdo con el paginator -->
+            {% for i in products.paginator.page_range %}
+
+              {% if products.number == i %} <!--si estamos en la pagina actual se marca el boton y se deshabilita -->
+                <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+              {% else %} <!-- -->
+                <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+              {% endif %}
+
+            {% endfor %}
+
+            <!--Aplicamos la logica del boton siguiente que solo se habilitara cuando haya paginas siguientes -->
+            {% if products.has_next %}
+              <li class="page-item"><a class="page-link" href="?page={{products.next_page_number}}">Siguiente</a></li>
+            {% else %}
+              <li class="page-item disabled"><a class="page-link" href="#">Siguiente</a></li>
+            {% endif %}
+
+
           </ul>
         </nav>
+        {% endif %}
 
       </main> <!-- col.// -->
 
